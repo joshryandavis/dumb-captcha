@@ -202,6 +202,7 @@
 
   <footer>
     <p>No data leaves your browser.</p>
+    <p><a href="https://github.com/joshryandavis/dumb-captcha">Source</a></p>
   </footer>
 </main>
 
@@ -411,40 +412,31 @@
     }
   }
 
-  function resetToForm() {
-    outcomeView.className = "outcome";
-    formView.style.display = "";
+  function freshQuestion() {
     pickQuestion();
     aEl.value = "";
     clearResult();
     aEl.focus();
   }
 
+  function resetToForm() {
+    outcomeView.className = "outcome";
+    formView.style.display = "";
+    freshQuestion();
+  }
+
   verifyBtn.addEventListener("click", () => {
-    const result = looksLikeRefusal(aEl.value);
-    if (result.verdict === "empty") {
-      showResult("warn", "Say something first.");
-      return;
-    }
-    if (result.verdict === "short") {
-      showResult("warn", "Too short — write at least 5 words.");
-      return;
-    }
-    if (result.verdict === "bot") {
-      showOutcome("fail");
-    } else {
-      showOutcome("pass");
-    }
+    const { verdict } = looksLikeRefusal(aEl.value);
+    if (verdict === "empty") return showResult("warn", "Say something first.");
+    if (verdict === "short") return showResult("warn", "Too short — write at least 5 words.");
+    showOutcome(verdict === "bot" ? "fail" : "pass");
   });
 
   tryAgainBtn.addEventListener("click", resetToForm);
 
   rerollBtn.addEventListener("click", (e) => {
     e.preventDefault();
-    pickQuestion();
-    aEl.value = "";
-    clearResult();
-    aEl.focus();
+    freshQuestion();
   });
 
   aEl.addEventListener("keydown", (e) => {
