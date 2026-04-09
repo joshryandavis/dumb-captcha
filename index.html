@@ -344,10 +344,14 @@
     "unfortunately", "i apologize", "i must"
   ];
 
+  const EMOJI_RE = /\p{Extended_Pictographic}/u;
+
   function looksLikeRefusal(raw) {
     const text = raw.toLowerCase().trim();
     if (text.length < 2) return { verdict: "empty" };
     if (text.split(/\s+/).filter(Boolean).length < 5) return { verdict: "short" };
+
+    if (EMOJI_RE.test(raw)) return { verdict: "bot", reason: "emoji" };
 
     for (const phrase of HARD_SIGNALS) {
       if (text.includes(phrase)) return { verdict: "bot", reason: phrase };
